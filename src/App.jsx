@@ -24,7 +24,7 @@ function BoxTask({ children }) {
 function BoxTop({ children, onAddTask }) {
   return (
     <form
-      className="grid md:grid-rows-2 md:grid-cols-4 lg:grid-rows-1 lg:grid-cols-4 w-full h-auto gap-2"
+      className="grid grid-rows-3 grid-cols-2 md:grid-cols-6 w-full h-auto gap-2"
       onSubmit={(e) => onAddTask(e)}
     >
       {children}
@@ -34,7 +34,7 @@ function BoxTop({ children, onAddTask }) {
 
 function Search({ search, onSearch }) {
   return (
-    <div className=" md:col-span-full lg:col-span-2">
+    <div className="col-span-full">
       <input
         type="text"
         value={search}
@@ -48,7 +48,7 @@ function Search({ search, onSearch }) {
 
 function Priority({ priority, onSetPriority }) {
   return (
-    <div className="md:col-span-2 lg:col-span-1">
+    <div className="col-span-full md:col-span-2">
       <select
         className={`w-full p-2 border-2 border-gray-100 rounded ${
           priority === "" && "text-gray-500"
@@ -65,9 +65,39 @@ function Priority({ priority, onSetPriority }) {
   );
 }
 
+function DueDate({ dueDate, onSetDueDate }) {
+  return (
+    <div className="col-span-1 md:col-span-2" title="select due date">
+      <input
+        className={`w-full p-2 border-2 border-gray-100 rounded ${
+          dueDate === "" && "text-gray-500"
+        }`}
+        type="date"
+        value={dueDate}
+        onChange={(e) => onSetDueDate(e.target.value)}
+      />
+    </div>
+  );
+}
+
+function DueTime({ dueTime, onSetDueTime }) {
+  return (
+    <div className="col-span-1 md:col-span-2" title="select due time">
+      <input
+        className={`w-full p-2 border-2 border-gray-100 rounded ${
+          dueTime === "" && "text-gray-500"
+        }`}
+        type="time"
+        value={dueTime}
+        onChange={(e) => onSetDueTime(e.target.value)}
+      />
+    </div>
+  );
+}
+
 function ButtonAddTask() {
   return (
-    <div className="md:col-span-2 lg:col-span-1 text-white bg-blue-500 rounded hover:bg-blue-800 ">
+    <div className="col-span-full text-white bg-blue-500 rounded hover:bg-blue-800 ">
       <button className="w-full py-2 px-4 hover:cursor-pointer">
         + Add Task
       </button>
@@ -84,12 +114,12 @@ function TaskFilter({
   const allStatus = ["All Tasks", "Completed", "Uncomplete"];
 
   return (
-    <div className=" flex justify-between my-4 ">
+    <div className=" sm:flex sm:justify-between my-4 ">
       <ul className="flex flex-wrap gap-4">
         {allStatus.map((status, index) => (
           <li
             key={index}
-            className={`cursor-pointer px-2 py-1 rounded-2xl ${
+            className={`cursor-pointer h-fit px-2 py-1 rounded-2xl ${
               filterTask === index
                 ? "bg-blue-200 text-blue-500 font-semibold"
                 : "bg-gray-200"
@@ -103,7 +133,7 @@ function TaskFilter({
 
       <select
         value={filterPriority}
-        className="border-1 rounded px-4"
+        className="border-1 rounded px-2 py-1 mt-4 sm:mt-0"
         onChange={(e) => onFilterPriority(e.target.value)}
       >
         <option value="">All Priority</option>
@@ -115,13 +145,23 @@ function TaskFilter({
   );
 }
 
-function CompleteTask({ taskData, onClearCompletedTask }) {
-  const completedTask = taskData.filter((task) => task.isComplete === true);
+function CompleteTask({
+  filteredTask,
+  filterTask,
+  filterPriority,
+  onClearCompletedTask,
+}) {
+  const completedTask = filteredTask.filter((task) => task.isComplete === true);
 
   return (
     <div className="flex justify-between">
       <h2 className="text-lg text-gray-600 font-bold">
-        Total {taskData.length} tasks ({completedTask.length} completed)
+        {filterTask === 0 &&
+          `Total ${filteredTask.length} ${filterPriority} tasks (${completedTask.length} completed)`}
+        {filterTask === 1 &&
+          `Total ${filteredTask.length} ${filterPriority} task completed`}
+        {filterTask === 2 &&
+          `Total ${filteredTask.length} ${filterPriority} task uncomplete`}
       </h2>
       <button
         className="cursor-pointer text-sm text-gray-400 hover:text-gray-800 hover:underline"
@@ -133,155 +173,83 @@ function CompleteTask({ taskData, onClearCompletedTask }) {
   );
 }
 
-function TaskList({ taskData, filterTask, filterPriority, onCompleteTask }) {
-  const allHigh = taskData.filter((task) => task.priority === "high");
-  const allMedium = taskData.filter((task) => task.priority === "medium");
-  const allLow = taskData.filter((task) => task.priority === "low");
-
-  const completeAll = taskData.filter((task) => task.isComplete === true);
-  const completeHigh = allHigh.filter((task) => task.isComplete === true);
-  const completeMedium = allMedium.filter((task) => task.isComplete === true);
-  const completeLow = allLow.filter((task) => task.isComplete === true);
-
-  const uncompleteAll = taskData.filter((task) => task.isComplete === false);
-  const uncompleteHigh = allHigh.filter((task) => task.isComplete === false);
-  const uncompleteMedium = allMedium.filter(
-    (task) => task.isComplete === false
-  );
-  const uncompleteLow = allLow.filter((task) => task.isComplete === false);
-
+function TaskList({
+  filterTask,
+  filterPriority,
+  onCompleteTask,
+  filteredTask,
+}) {
   return (
     <>
-      {taskData && taskData.length > 0 ? (
+      {filteredTask && filteredTask.length > 0 ? (
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-          {filterTask === 0
-            ? filterPriority === ""
-              ? taskData.map((task, index) => (
-                  <TaskItem
-                    key={index}
-                    task={task}
-                    index={index}
-                    onCompleteTask={onCompleteTask}
-                  />
-                ))
-              : filterPriority === "high"
-              ? allHigh.map((task, index) => (
-                  <TaskItem
-                    key={index}
-                    task={task}
-                    index={index}
-                    onCompleteTask={onCompleteTask}
-                  />
-                ))
-              : filterPriority === "medium"
-              ? allMedium.map((task, index) => (
-                  <TaskItem
-                    key={index}
-                    task={task}
-                    index={index}
-                    onCompleteTask={onCompleteTask}
-                  />
-                ))
-              : filterPriority === "low"
-              ? allLow.map((task, index) => (
-                  <TaskItem
-                    key={index}
-                    task={task}
-                    index={index}
-                    onCompleteTask={onCompleteTask}
-                  />
-                ))
-              : null
-            : filterTask === 1
-            ? filterPriority === ""
-              ? completeAll.map((task, index) => (
-                  <TaskItem
-                    key={index}
-                    task={task}
-                    index={index}
-                    onCompleteTask={onCompleteTask}
-                  />
-                ))
-              : filterPriority === "high"
-              ? completeHigh.map((task, index) => (
-                  <TaskItem
-                    key={index}
-                    task={task}
-                    index={index}
-                    onCompleteTask={onCompleteTask}
-                  />
-                ))
-              : filterPriority === "medium"
-              ? completeMedium.map((task, index) => (
-                  <TaskItem
-                    key={index}
-                    task={task}
-                    index={index}
-                    onCompleteTask={onCompleteTask}
-                  />
-                ))
-              : filterPriority === "low"
-              ? completeLow.map((task, index) => (
-                  <TaskItem
-                    key={index}
-                    task={task}
-                    index={index}
-                    onCompleteTask={onCompleteTask}
-                  />
-                ))
-              : null
-            : filterTask === 2
-            ? filterPriority === ""
-              ? uncompleteAll.map((task, index) => (
-                  <TaskItem
-                    key={index}
-                    task={task}
-                    index={index}
-                    onCompleteTask={onCompleteTask}
-                  />
-                ))
-              : filterPriority === "high"
-              ? uncompleteHigh.map((task, index) => (
-                  <TaskItem
-                    key={index}
-                    task={task}
-                    index={index}
-                    onCompleteTask={onCompleteTask}
-                  />
-                ))
-              : filterPriority === "medium"
-              ? uncompleteMedium.map((task, index) => (
-                  <TaskItem
-                    key={index}
-                    task={task}
-                    index={index}
-                    onCompleteTask={onCompleteTask}
-                  />
-                ))
-              : filterPriority === "low"
-              ? uncompleteLow.map((task, index) => (
-                  <TaskItem
-                    key={index}
-                    task={task}
-                    index={index}
-                    onCompleteTask={onCompleteTask}
-                  />
-                ))
-              : null
-            : null}
+          {filteredTask.map((task, index) => (
+            <TaskItem
+              key={index}
+              task={task}
+              index={index}
+              onCompleteTask={onCompleteTask}
+            />
+          ))}
         </ul>
       ) : (
-        <NoTask />
+        <NoTask
+          filteredTask={filteredTask}
+          filterTask={filterTask}
+          filterPriority={filterPriority}
+        />
       )}
     </>
   );
 }
 
 function TaskItem({ task, index, onCompleteTask }) {
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+
+    return `${day}-${month}-${year}`;
+  };
+
+  const getCurrentTime = () => {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+
+    return `${hours}:${minutes}`;
+  };
+
+  const getTommorowDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate() + 1).padStart(2, "0");
+
+    return `${day}-${month}-${year}`;
+  };
+
   return (
     <li className="p-3 shadow-sm">
       <div className="flex justify-between">
-        <span className="text-yellow-500">{task.dueDate}</span>
+        {task.dueDate < getTodayDate() && (
+          <span className="text-red-500">Outdated</span>
+        )}
+        {task.dueDate === getTodayDate() && task.dueTime < getCurrentTime() && (
+          <span className="text-red-500">Outdated</span>
+        )}
+        {task.dueDate === getTodayDate() &&
+          task.dueTime >= getCurrentTime() && (
+            <span className="text-yellow-500">Today, {task.dueTime}</span>
+          )}
+        {task.dueDate === getTommorowDate() && (
+          <span className="text-blue-500">Tomorrow, {task.dueTime}</span>
+        )}
+        {task.dueDate > getTommorowDate() && (
+          <span className="text-blue-500">{task.dueDate}</span>
+        )}
+
         {task.priority === "high" && (
           <span className="text-red-400 font-medium">⚠️High</span>
         )}
@@ -295,9 +263,10 @@ function TaskItem({ task, index, onCompleteTask }) {
 
       <div className="flex flex-wrap">
         <p
-          className={`break-words ${
+          className={`cursor-default truncate ${
             task.isComplete ? "line-through" : "font-bold"
           }`}
+          title={task.title}
         >
           {task.title}
         </p>
@@ -319,7 +288,7 @@ function TaskItem({ task, index, onCompleteTask }) {
   );
 }
 
-function NoTask() {
+function NoTask({ filteredTask, filterTask, filterPriority }) {
   return (
     <div className="w-full">
       <svg
@@ -379,9 +348,23 @@ function NoTask() {
           ></path>
         </g>
       </svg>
-      <p className="text-center text-gray-500">
-        No tasks yet. Please create a task!
-      </p>
+      {filteredTask.length === 0 && filterTask === 0 && (
+        <p className="text-center text-gray-500">
+          No tasks yet. Please create a task!
+        </p>
+      )}
+      {filterTask === 1 && (
+        <p className="text-center text-gray-500">
+          No task {filterPriority !== "" && `with ${filterPriority} priority`}{" "}
+          completed yet
+        </p>
+      )}
+      {filterTask === 2 && (
+        <p className="text-center text-gray-500">
+          No uncomplete tasks{" "}
+          {filterPriority !== "" && `with ${filterPriority} priority`} available
+        </p>
+      )}
     </div>
   );
 }
@@ -390,16 +373,14 @@ function App() {
   const [taskData, setTaskData] = useState([]);
   const [search, setSearch] = useState("");
   const [priority, setPriority] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [dueTime, setDueTime] = useState("");
   const [filterTask, setFilterTask] = useState(0);
   const [filterPriority, setFilterPriority] = useState("");
 
-  function getDate() {
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, "0");
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const year = today.getFullYear();
-
-    return `${day}-${month}-${year}`;
+  function handleDateFormat(dueDate) {
+    const splitDate = dueDate.split("-");
+    return `${splitDate[2]}-${splitDate[1]}-${splitDate[0]}`;
   }
 
   function handleAddTask(e) {
@@ -407,18 +388,26 @@ function App() {
 
     const newTask = {
       title: search.trim(),
-      dueDate: getDate(),
+      dueDate: handleDateFormat(dueDate),
+      dueTime: dueTime,
       priority: priority,
       isComplete: false,
     };
 
-    if (search.trim() !== "" && priority !== "") {
+    const TaskCheck = () => {
+      if (search.trim() === "") return alert("Please input the task!");
+      if (priority === "") return alert("Please choose priority level!");
+      if (dueDate === "") return alert("Please select the due date!");
+      if (dueTime === "") return alert("Please select the due time!");
+
       setTaskData((tasks) => [...tasks, newTask]);
       setSearch("");
       setPriority("");
-    } else {
-      alert("Please input task and choose priority level!");
-    }
+      setDueDate("");
+      setDueTime("");
+    };
+
+    TaskCheck();
   }
 
   function handleClearCompleteTask() {
@@ -435,6 +424,13 @@ function App() {
     );
   }
 
+  const filteredTask = taskData.filter((task) => {
+    if (filterTask === 1 && !task.isComplete) return false;
+    if (filterTask === 2 && task.isComplete) return false;
+    if (filterPriority && task.priority !== filterPriority) return false;
+    return true;
+  });
+
   return (
     <div className="h-screen w-full flex flex-col items-center">
       <Header />
@@ -442,6 +438,8 @@ function App() {
         <BoxTop onAddTask={handleAddTask}>
           <Search search={search} onSearch={setSearch} />
           <Priority priority={priority} onSetPriority={setPriority} />
+          <DueDate dueDate={dueDate} onSetDueDate={setDueDate} />
+          <DueTime dueTime={dueTime} onSetDueTime={setDueTime} />
           <ButtonAddTask />
         </BoxTop>
         <TaskFilter
@@ -451,14 +449,16 @@ function App() {
           onFilterPriority={setFilterPriority}
         />
         <CompleteTask
-          taskData={taskData}
+          filteredTask={filteredTask}
+          filterTask={filterTask}
+          filterPriority={filterPriority}
           onClearCompletedTask={handleClearCompleteTask}
         />
         <TaskList
-          taskData={taskData}
           filterTask={filterTask}
           filterPriority={filterPriority}
           onCompleteTask={toogleCompleteTask}
+          filteredTask={filteredTask}
         />
       </BoxTask>
     </div>
