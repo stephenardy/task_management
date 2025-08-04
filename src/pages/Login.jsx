@@ -1,7 +1,10 @@
+import AuthLayout from "../components/layouts/Auth";
+import LoginView from "../components/views/Login";
+
 export default function Login() {
   return (
-    <div>
-      <h1>This is login</h1>
-    </div>
+    <AuthLayout>
+      <LoginView></LoginView>
+    </AuthLayout>
   );
 }

@@ -1,7 +1,10 @@
+import AuthLayout from "../components/layouts/Auth";
+import RegisterView from "../components/views/Register/RegisterView";
+
 export default function Register() {
   return (
-    <div>
-      <h1>This is register page</h1>
-    </div>
+    <AuthLayout>
+      <RegisterView></RegisterView>
+    </AuthLayout>
   );
 }
