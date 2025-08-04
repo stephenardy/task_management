@@ -1,3 +1,5 @@
+import clsx from "clsx";
+
 export default function TaskFilter({
   filterTask,
   onFilterTask,
@@ -12,11 +14,12 @@ export default function TaskFilter({
         {allStatus.map((status, index) => (
           <li
             key={index}
-            className={`cursor-pointer h-fit px-2 py-1 rounded-2xl ${
+            className={clsx(
+              "cursor-pointer h-fit px-2 py-1 rounded-2xl",
               filterTask === index
                 ? "bg-blue-200 text-blue-500 font-semibold"
                 : "bg-gray-200"
-            } `}
+            )}
             onClick={() => onFilterTask(index)}
           >
             {status}

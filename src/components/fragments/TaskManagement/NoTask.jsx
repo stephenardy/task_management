@@ -1,4 +1,26 @@
 export default function NoTask({ filteredTask, filterTask, filterPriority }) {
+  const renderMessage = () => {
+    if (filteredTask.length === 0 && filterTask === 0) {
+      return "No tasks yet. Please create a task!";
+    }
+
+    if (filterTask === 1) {
+      return `No tasks ${
+        filterPriority ? `with ${filterPriority} priority` : ""
+      } completed yet`;
+    }
+
+    if (filterTask === 2) {
+      return `No incomplete tasks ${
+        filterPriority ? ` with ${filterPriority} priority` : ""
+      } available.`;
+    }
+
+    return null;
+  };
+
+  const message = renderMessage();
+
   return (
     <div className="w-full">
       <svg
@@ -58,23 +80,7 @@ export default function NoTask({ filteredTask, filterTask, filterPriority }) {
           ></path>
         </g>
       </svg>
-      {filteredTask.length === 0 && filterTask === 0 && (
-        <p className="text-center text-gray-500">
-          No tasks yet. Please create a task!
-        </p>
-      )}
-      {filterTask === 1 && (
-        <p className="text-center text-gray-500">
-          No task {filterPriority !== "" && `with ${filterPriority} priority`}{" "}
-          completed yet
-        </p>
-      )}
-      {filterTask === 2 && (
-        <p className="text-center text-gray-500">
-          No uncomplete tasks{" "}
-          {filterPriority !== "" && `with ${filterPriority} priority`} available
-        </p>
-      )}
+      {message && <p className="text-center text-gray-500">{message}</p>}
     </div>
   );
 }
