@@ -6,12 +6,14 @@ import AddTaskForm from "./AddTaskForm/index";
 // import TaskList from "../../TaskList";
 import toast from "react-hot-toast";
 import TasksList from "./TasksList";
+import useTasks from "./useTasks";
 
 export default function TaskManagementView() {
-  const [taskData, setTaskData] = useState([]);
+  const { taskData, updateTasks, toogleCompleteTask, handleClearCompleteTask } =
+    useTasks();
 
   const [formData, setFormData] = useState({
-    search: "",
+    title: "",
     priority: "",
     dueDate: "",
     dueTime: "",
@@ -26,8 +28,8 @@ export default function TaskManagementView() {
     return `${splitDate[2]}-${splitDate[1]}-${splitDate[0]}`;
   }
 
-  function validateTask({ search, priority, dueDate, dueTime }) {
-    if (!search.trim()) return "Please input the task!";
+  function validateTask({ title, priority, dueDate, dueTime }) {
+    if (!title.trim()) return "Please input the task!";
     if (!priority) return "Please choose a priority level!";
     if (!dueDate) return "Please select the due date!";
     if (!dueTime) return "Please select the due time!";
@@ -45,7 +47,7 @@ export default function TaskManagementView() {
   function handleAddTask(e) {
     e.preventDefault();
 
-    const { search, priority, dueDate, dueTime } = formData;
+    const { title, priority, dueDate, dueTime } = formData;
 
     const error = validateTask(formData);
 
@@ -54,9 +56,12 @@ export default function TaskManagementView() {
       return;
     }
 
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+
     const newTask = {
       id: crypto.randomUUID(),
-      title: search.trim(),
+      userId: currentUser?.id,
+      title: title.trim(),
       dueDate: handleDateFormat(dueDate),
       dueTime,
       priority,
@@ -65,8 +70,12 @@ export default function TaskManagementView() {
 
     try {
       setIsLoading(true);
-      setTaskData((tasks) => [...tasks, newTask]);
-      setFormData({ search: "", priority: "", dueDate: "", dueTime: "" });
+
+      const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+      localStorage.setItem("tasks", JSON.stringify([...tasks, newTask]));
+
+      setFormData({ title: "", priority: "", dueDate: "", dueTime: "" });
+      updateTasks();
       toast.success("Task added successfully!");
     } catch (error) {
       console.error(`Error adding new task: ${error}`);
@@ -74,20 +83,6 @@ export default function TaskManagementView() {
     } finally {
       setIsLoading(false);
     }
-  }
-
-  function handleClearCompleteTask() {
-    setTaskData((taskData) =>
-      taskData.filter((task) => task.isComplete === false)
-    );
-  }
-
-  function toogleCompleteTask(taskId) {
-    setTaskData((currTasks) =>
-      currTasks.map((task) =>
-        task.id === taskId ? { ...task, isComplete: !task.isComplete } : task
-      )
-    );
   }
 
   const filteredTask = taskData.filter((task) => {

@@ -4,7 +4,7 @@ import RegisterView from "../components/views/Register/RegisterView";
 export default function Register() {
   return (
     <AuthLayout>
-      <RegisterView></RegisterView>
+      <RegisterView />
     </AuthLayout>
   );
 }

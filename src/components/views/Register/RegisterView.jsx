@@ -105,48 +105,68 @@ export default function RegisterView() {
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <p className="w-full text-center text-red-500">{error}</p>}
         <div>
-          <label className="text-sm font-medium text-gray-700 block mb-1">
+          <label
+            htmlFor="email"
+            className="text-sm font-medium text-gray-700 block mb-1"
+          >
             Email
           </label>
           <Input
+            id="email"
             type="email"
             name="email"
+            placeholder="Enter your email address"
             value={form.email}
             onChange={handleChange}
             required
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-gray-700 block mb-1">
+          <label
+            htmlFor="username"
+            className="text-sm font-medium text-gray-700 block mb-1"
+          >
             Username
           </label>
           <Input
+            id="username"
             type="text"
             name="username"
+            placeholder="Choose a unique username"
             value={form.username}
             onChange={handleChange}
             required
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-gray-700 block mb-1">
+          <label
+            htmlFor="password"
+            className="text-sm font-medium text-gray-700 block mb-1"
+          >
             Password
           </label>
           <Input
+            id="password"
             type="password"
             name="password"
+            placeholder="Create a strong password"
             value={form.password}
             onChange={handleChange}
             required
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-gray-700 block mb-1">
+          <label
+            htmlFor="confirm-password"
+            className="text-sm font-medium text-gray-700 block mb-1"
+          >
             Confirm Password
           </label>
           <Input
+            id="confirm-password"
             type="password"
             name="confirmPassword"
+            placeholder="Re-enter your password"
             value={form.confirmPassword}
             onChange={handleChange}
             required

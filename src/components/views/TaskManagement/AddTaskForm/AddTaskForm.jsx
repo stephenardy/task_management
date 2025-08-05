@@ -9,9 +9,9 @@ export default function AddTaskForm({
   setFormData,
   isLoading,
 }) {
-  const { search, priority, dueDate, dueTime } = formData;
+  const { title, priority, dueDate, dueTime } = formData;
 
-  const handleSearch = (e) => {
+  const handleTitle = (e) => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({
@@ -54,9 +54,9 @@ export default function AddTaskForm({
     >
       <div className="col-span-full">
         <Input
-          name="search"
-          value={search}
-          onChange={handleSearch}
+          name="title"
+          value={title}
+          onChange={handleTitle}
           placeholder="What needs to be done?"
         />
       </div>
